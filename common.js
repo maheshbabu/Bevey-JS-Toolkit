@@ -1,7 +1,7 @@
 /*global window, ActiveXObject, init, console*/
 /*jslint white: true, browser: true, evil: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true, indent: 2*/
 
-var bevey = bevey || (function () {
+var Bevey = Bevey || (function () {
   'use strict';
 
   /**
@@ -11,7 +11,7 @@ var bevey = bevey || (function () {
    *        something decent.
    */
   return {
-    version : '4.1.11',
+    version : '8.28.11',
     cssRoot : 'css/',
     debug   : true,
 
@@ -61,7 +61,7 @@ var bevey = bevey || (function () {
       }
 
       if (event) {
-        bevey.event.add(elm, event, function (e) {
+        Bevey.event.add(elm, event, function (e) {
           if (e.preventDefault) {
             e.preventDefault();
           }
@@ -71,11 +71,11 @@ var bevey = bevey || (function () {
       }
 
       else {
-        bevey.event.add(elm, 'click', function (e) {
-          var elm = bevey.getTarget(e);
+        Bevey.event.add(elm, 'click', function (e) {
+          var elm = Bevey.getTarget(e);
 
           if (elm.nodeName.toLowerCase() !== 'a') {
-            elm = bevey.getTarget(e);
+            elm = Bevey.getTarget(e);
           }
 
           if (e.preventDefault) {
@@ -123,7 +123,7 @@ var bevey = bevey || (function () {
       *         is triggered.
       * @param {Boolean} capture true if the event should be registered as a
       *         capturing listener.  Defaults to false.
-      * @note All events are added to the bevey.event.list array for access
+      * @note All events are added to the Bevey.event.list array for access
       *        outside this function.
       */
       add : function (elm, event, action, capture) {
@@ -133,7 +133,7 @@ var bevey = bevey || (function () {
           return function (e) {
             var target = e.relatedTarget;
 
-            if ((this === target) || (bevey.isChildOf(target, this))) {
+            if ((this === target) || (Bevey.isChildOf(target, this))) {
               return;
             }
 
@@ -167,7 +167,7 @@ var bevey = bevey || (function () {
           elm['on' + event] = action;
         }
 
-        bevey.event.list.push([elm, event, action]);
+        Bevey.event.list.push([elm, event, action]);
       },
 
      /**
@@ -180,7 +180,7 @@ var bevey = bevey || (function () {
       *         and event.
       * @param {Boolean} capture true if the event was registered as a
       *         capturing listener.  Defaults to false.
-      * @note Automatically removes the event from the bevey.event.list array.
+      * @note Automatically removes the event from the Bevey.event.list array.
       */
       remove : function (elm, event, action, capture) {
         capture = capture || false;
@@ -207,13 +207,13 @@ var bevey = bevey || (function () {
           elm['on' + event] = null;
         }
 
-        for (i; i < bevey.event.list.length; i += 1) {
-          if (bevey.event.list[i]) {
-            if ((bevey.event.list[i]) &&
-                (bevey.event.list[i][0] === elm) &&
-                (bevey.event.list[i][1] === event) &&
-                (bevey.event.list[i][2] === action)) {
-              bevey.event.list.splice(i, 1);
+        for (i; i < Bevey.event.list.length; i += 1) {
+          if (Bevey.event.list[i]) {
+            if ((Bevey.event.list[i]) &&
+                (Bevey.event.list[i][0] === elm) &&
+                (Bevey.event.list[i][1] === event) &&
+                (Bevey.event.list[i][2] === action)) {
+              Bevey.event.list.splice(i, 1);
 
               break;
             }
@@ -222,19 +222,19 @@ var bevey = bevey || (function () {
       },
 
      /**
-      * Loops through all registered events (referencing the bevey.event.list
+      * Loops through all registered events (referencing the Bevey.event.list
       *  array) and removes all events.  This should only be executed onunload
       *  to prevent documented IE6 memory leaks.
       */
       removeAll : function (elm) {
         elm = elm || document;
 
-        var i = bevey.event.list.length - 1;
+        var i = Bevey.event.list.length - 1;
 
         for (i; i >= 0 ; i -= 1) {
-          if (bevey.event.list[i]) {
-            if ((bevey.event.list[i]) && ((bevey.event.list[i][0] === elm) || (elm === document))) {
-              bevey.event.remove(bevey.event.list[i][0], bevey.event.list[i][1], bevey.event.list[i][2]);
+          if (Bevey.event.list[i]) {
+            if ((Bevey.event.list[i]) && ((Bevey.event.list[i][0] === elm) || (elm === document))) {
+              Bevey.event.remove(Bevey.event.list[i][0], Bevey.event.list[i][1], Bevey.event.list[i][2]);
             }
           }
         }
@@ -300,7 +300,7 @@ var bevey = bevey || (function () {
     * @param {String} className Class name being checked.
     */
     hasClass : function (elm, className) {
-      return bevey.hasAttribute(elm, 'className', className);
+      return Bevey.hasAttribute(elm, 'className', className);
     },
 
    /**
@@ -311,8 +311,8 @@ var bevey = bevey || (function () {
     * @param {String} className Class name to be applied.
     */
     addClass : function (elm, className) {
-      if (!bevey.hasClass(elm, className)) {
-        elm.className = bevey.trim(elm.className + ' ' + className);
+      if (!Bevey.hasClass(elm, className)) {
+        elm.className = Bevey.trim(elm.className + ' ' + className);
       }
     },
 
@@ -323,9 +323,9 @@ var bevey = bevey || (function () {
     * @param {String} className Class name to be removed.
     */
     removeClass : function (elm, className) {
-      if (bevey.hasClass(elm, className)) {
+      if (Bevey.hasClass(elm, className)) {
         elm.className = elm.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ');
-        elm.className = bevey.trim(elm.className);
+        elm.className = Bevey.trim(elm.className);
       }
     },
 
@@ -337,12 +337,12 @@ var bevey = bevey || (function () {
     * @param {String} className Class Name to be toggled.
     */
     toggleClass : function (elm, className) {
-      if (!bevey.hasClass(elm, className)) {
-        bevey.addClass(elm, className);
+      if (!Bevey.hasClass(elm, className)) {
+        Bevey.addClass(elm, className);
       }
 
       else {
-        bevey.removeClass(elm, className);
+        Bevey.removeClass(elm, className);
       }
     },
 
@@ -393,7 +393,7 @@ var bevey = bevey || (function () {
         children = parent.getElementsByTagName(tag);
 
         for (i in children) {
-          if (bevey.hasClass(children[i], className)) {
+          if (Bevey.hasClass(children[i], className)) {
             elementsWithClass[j] = children[i];
             j += 1;
           }
@@ -413,7 +413,7 @@ var bevey = bevey || (function () {
     removeChildren : function (elm) {
       if (elm.hasChildNodes()) {
         while (elm.childNodes.length > 0) {
-          bevey.event.removeAll(elm.firstChild);
+          Bevey.event.removeAll(elm.firstChild);
 
           elm.removeChild(elm.firstChild);
         }
@@ -513,8 +513,8 @@ var bevey = bevey || (function () {
       for (i; i < values.length; i += 1) {
         value = values[i].split('=');
 
-        if (bevey.trim(value[0]) === variable) {
-          return bevey.trim(value[1]);
+        if (Bevey.trim(value[0]) === variable) {
+          return Bevey.trim(value[1]);
         }
       }
     },
@@ -554,7 +554,7 @@ var bevey = bevey || (function () {
 
         else if (asset.type === 'js') {
           file      = document.createElement('script');
-          bevey.event.add(file, 'load', function () {
+          Bevey.event.add(file, 'load', function () {
             asset.onComplete();
           });
           file.type = 'text/javascript';
@@ -565,7 +565,7 @@ var bevey = bevey || (function () {
     },
 
    /**
-    * Logs the given text to console.log if it is available.  If bevey.debug is
+    * Logs the given text to console.log if it is available.  If Bevey.debug is
     *  set to true, a console will be loaded to output the log message.
     *
     * @param {String} text Message to be logged.
@@ -574,7 +574,7 @@ var bevey = bevey || (function () {
     * @note Uses eval to executed inputted JS commands.
     */
     log : function (text, type) {
-      if (bevey.debug === true) {      
+      if (Bevey.debug === true) {      
         var asset,
             wrapper,
             title,
@@ -589,10 +589,10 @@ var bevey = bevey || (function () {
         if (!document.getElementById('logger-console')) {
           asset = {
             type: 'css',
-            address: bevey.cssRoot + 'logger.css'
+            address: Bevey.cssRoot + 'logger.css'
           };
 
-          bevey.loadAsset(asset);
+          Bevey.loadAsset(asset);
 
           wrapper = document.createElement('form');
           title   = document.createElement('h4');
@@ -600,7 +600,7 @@ var bevey = bevey || (function () {
           input   = document.createElement('input');
 
           wrapper.id      = 'logger-console';
-          bevey.putText(title, 'Log Console');
+          Bevey.putText(title, 'Log Console');
           input.type      = 'text';
 
           wrapper.appendChild(title);
@@ -608,7 +608,7 @@ var bevey = bevey || (function () {
           wrapper.appendChild(input);
           document.body.appendChild(wrapper);
 
-          bevey.event.add(input, 'keyup', function (e) {
+          Bevey.event.add(input, 'keyup', function (e) {
             if (e.keyCode === 38) {
               if (inputIndex === inputBuffer.length) {
                 tempBuffer = this.value;
@@ -634,9 +634,9 @@ var bevey = bevey || (function () {
             }
           });
 
-          bevey.event.add(wrapper, 'submit', function (e) {
+          Bevey.event.add(wrapper, 'submit', function (e) {
             if (input.value === 'clear') {
-              bevey.removeChildren(logger);
+              Bevey.removeChildren(logger);
             }
 
             else if (input.value === 'exit') {
@@ -644,7 +644,7 @@ var bevey = bevey || (function () {
             }
 
             else {
-              bevey.log(input.value);
+              Bevey.log(input.value);
 
               try {
                 if (window.execScript) {
@@ -657,7 +657,7 @@ var bevey = bevey || (function () {
               }
 
               catch (error) {
-                bevey.log(error, 'error');
+                Bevey.log(error, 'error');
               }
             }
 
@@ -677,7 +677,7 @@ var bevey = bevey || (function () {
             dragElm: title
           };
 
-          bevey.clickDrag(drag);
+          Bevey.clickDrag(drag);
         }
 
         else {
@@ -689,11 +689,11 @@ var bevey = bevey || (function () {
         message = document.createElement('li');
 
         if (type) {
-          bevey.addClass(message, type);
+          Bevey.addClass(message, type);
         }
 
         if (text.tagName) {
-          bevey.event.add(message, 'mouseenter', function () {
+          Bevey.event.add(message, 'mouseenter', function () {
             if (typeof(text.style.outline) === 'string') {
               text.style.outline = '3px solid #FF0000';
             }
@@ -703,7 +703,7 @@ var bevey = bevey || (function () {
             }
           });
 
-          bevey.event.add(message, 'mouseleave', function () {
+          Bevey.event.add(message, 'mouseleave', function () {
             if (typeof(text.style.outline) === 'string') {
               text.style.outline = 'none';
             }
@@ -714,7 +714,7 @@ var bevey = bevey || (function () {
           });
         }
 
-        bevey.putText(message, text);
+        Bevey.putText(message, text);
         logger.appendChild(message);
         logger.scrollTop = logger.scrollHeight;
       }
@@ -741,7 +741,7 @@ var bevey = bevey || (function () {
         rgb = rgb.split(',');
 
         for (var i = 0; i < rgb.length; i += 1) {
-          rgb[i] = parseInt(bevey.trim(rgb[i]), 10);
+          rgb[i] = parseInt(Bevey.trim(rgb[i]), 10);
         }
       }
 
@@ -756,7 +756,7 @@ var bevey = bevey || (function () {
     * @return {String} String HEX equivalent to the RGB entered: "#FFFFFF".
     */
     rgbToHex : function (rgb) {
-      rgb = bevey.findRgb(rgb);
+      rgb = Bevey.findRgb(rgb);
 
       for (var i = 0; i < rgb.length; i += 1) {
         rgb[i] = '0123456789ABCDEF'.charAt((rgb[i] - rgb[i] % 16) / 16) + '0123456789ABCDEF'.charAt(rgb[i] % 16);
@@ -818,13 +818,13 @@ var bevey = bevey || (function () {
       if (styleValue) {
         if ((property.indexOf('color') !== -1) &&
             (styleValue.indexOf('rgb') !== -1)) {
-          styleValue = bevey.rgbToHex(styleValue);
+          styleValue = Bevey.rgbToHex(styleValue);
         }
 
         if ((styleValue.indexOf('px') !== -1) ||
             (styleValue.indexOf('em') !== -1) ||
             (styleValue.indexOf('%')  !== -1)) {
-          styleValue = bevey.stripUnits(styleValue);
+          styleValue = Bevey.stripUnits(styleValue);
         }
 
         if (property === 'opacity') {
@@ -906,7 +906,7 @@ var bevey = bevey || (function () {
           elm = elm.offsetParent;
 
           if (relative) {
-            parentPosition = bevey.findStyle(elm, 'position');
+            parentPosition = Bevey.findStyle(elm, 'position');
 
             if ((parentPosition === 'absolute') || (parentPosition === 'relative')) {
               break;
@@ -1056,12 +1056,12 @@ var bevey = bevey || (function () {
           fauxEnd   = fauxEnd   * 100;
         }
 
-        if (bevey.hasClass(animation.elm, 'animating')) {
+        if (Bevey.hasClass(animation.elm, 'animating')) {
           return false;
         }
 
         if (animation.start === null) {
-          animation.start = bevey.findStyle(animation.elm, animation.property);
+          animation.start = Bevey.findStyle(animation.elm, animation.property);
         }
 
         animation.elm        = animation.elm        || this;
@@ -1089,7 +1089,7 @@ var bevey = bevey || (function () {
             animation.elm.style['-webkit-transition'] = animation.property + ' ' + (animation.duration / 1000) + 's ' + animation.ease;
             animation.elm.style.transition            = animation.property + ' ' + (animation.duration / 1000) + 's ' + animation.ease;
 
-            bevey.addClass(animation.elm, 'animating');
+            Bevey.addClass(animation.elm, 'animating');
             animation.onStart();
 
             if ((animation.elm.style.display === 'none') && (animation.end > 0)) {
@@ -1097,7 +1097,7 @@ var bevey = bevey || (function () {
             }
 
             callBack = function () {
-              bevey.removeClass(animation.elm, 'animating');
+              Bevey.removeClass(animation.elm, 'animating');
 
               if ((animation.hideIfNeeded) &&
                   (animation.end <= 0) &&
@@ -1110,17 +1110,17 @@ var bevey = bevey || (function () {
 
               animation.onComplete();
 
-              bevey.event.remove(animation.elm, 'mozTransitionEnd',    callBack);
-              bevey.event.remove(animation.elm, 'webkitTransitionEnd', callBack);
-              bevey.event.remove(animation.elm, 'transitionEnd',       callBack);
+              Bevey.event.remove(animation.elm, 'mozTransitionEnd',    callBack);
+              Bevey.event.remove(animation.elm, 'webkitTransitionEnd', callBack);
+              Bevey.event.remove(animation.elm, 'transitionEnd',       callBack);
             };
 
-            bevey.event.add(animation.elm, 'mozTransitionEnd',    callBack);
-            bevey.event.add(animation.elm, 'webkitTransitionEnd', callBack);
-            bevey.event.add(animation.elm, 'transitionEnd',       callBack);
+            Bevey.event.add(animation.elm, 'mozTransitionEnd',    callBack);
+            Bevey.event.add(animation.elm, 'webkitTransitionEnd', callBack);
+            Bevey.event.add(animation.elm, 'transitionEnd',       callBack);
 
             if (animation.property === 'opacity') {
-              bevey.setOpacity(animation.elm, animation.end);
+              Bevey.setOpacity(animation.elm, animation.end);
             }
 
             else if ((animation.property === 'background-color') ||
@@ -1139,8 +1139,8 @@ var bevey = bevey || (function () {
         animation.onTween = animation.onTween || function () {};
 
         if ((animation.property.indexOf('color') !== -1)) {
-          animation.start     = bevey.findRgb(bevey.hexToRgb(animation.start));
-          animation.end       = bevey.findRgb(bevey.hexToRgb(animation.end));
+          animation.start     = Bevey.findRgb(Bevey.hexToRgb(animation.start));
+          animation.end       = Bevey.findRgb(Bevey.hexToRgb(animation.end));
           deltas              = [(animation.end[0] - animation.start[0]),
                                  (animation.end[1] - animation.start[1]),
                                  (animation.end[2] - animation.start[2])];
@@ -1157,7 +1157,7 @@ var bevey = bevey || (function () {
           animation.stepDelta = animation.stepDelta / 100;
         }
 
-        bevey.addClass(animation.elm, 'animating');
+        Bevey.addClass(animation.elm, 'animating');
 
         animation.onStart();
       }
@@ -1204,17 +1204,17 @@ var bevey = bevey || (function () {
 
       switch (animation.property) {
       case 'opacity' :
-        bevey.setOpacity(animation.elm, thisStep);
+        Bevey.setOpacity(animation.elm, thisStep);
         break;
 
       case 'background-color' :
-        animation.elm.style.backgroundColor = bevey.rgbToHex([findChange(animation.start[0], animation.stepIndex, animation.steps, animation.stepDelta[0], animation.end[0], animation.ease),
+        animation.elm.style.backgroundColor = Bevey.rgbToHex([findChange(animation.start[0], animation.stepIndex, animation.steps, animation.stepDelta[0], animation.end[0], animation.ease),
                                                               findChange(animation.start[1], animation.stepIndex, animation.steps, animation.stepDelta[1], animation.end[1], animation.ease),
                                                               findChange(animation.start[2], animation.stepIndex, animation.steps, animation.stepDelta[2], animation.end[2], animation.ease)]);
         break;
 
       case 'color' :
-        animation.elm.style.color = bevey.rgbToHex([findChange(animation.start[0], animation.stepIndex, animation.steps, animation.stepDelta[0], animation.end[0], animation.ease),
+        animation.elm.style.color = Bevey.rgbToHex([findChange(animation.start[0], animation.stepIndex, animation.steps, animation.stepDelta[0], animation.end[0], animation.ease),
                                                     findChange(animation.start[1], animation.stepIndex, animation.steps, animation.stepDelta[1], animation.end[1], animation.ease),
                                                     findChange(animation.start[2], animation.stepIndex, animation.steps, animation.stepDelta[2], animation.end[2], animation.ease)]);
         break;
@@ -1224,11 +1224,11 @@ var bevey = bevey || (function () {
         break;
       }
 
-      if ((animation.steps > animation.stepIndex) && (bevey.hasClass(animation.elm, 'animating'))) {
+      if ((animation.steps > animation.stepIndex) && (Bevey.hasClass(animation.elm, 'animating'))) {
         animation.onTween();
 
         setTimeout(function () {
-          bevey.animate(animation);
+          Bevey.animate(animation);
         }, animation.interval);
       }
 
@@ -1237,7 +1237,7 @@ var bevey = bevey || (function () {
           animation.stepIndex = 0;
         }
 
-        bevey.removeClass(animation.elm, 'animating');
+        Bevey.removeClass(animation.elm, 'animating');
 
         animation.onComplete();
       }
@@ -1286,7 +1286,7 @@ var bevey = bevey || (function () {
             }
 
             else if (ajaxRequest.onComplete.childNodes[0]) {
-              bevey.putText(ajaxRequest.onComplete, ajaxRequest.response);
+              Bevey.putText(ajaxRequest.onComplete, ajaxRequest.response);
             }
             break;
 
@@ -1296,8 +1296,8 @@ var bevey = bevey || (function () {
           }
         };
 
-        if ((bevey.ajax.cache[ajaxRequest.path + '?' + ajaxRequest.param + '?'] !== undefined) && (ajaxRequest.cache)) {
-          ajaxRequest.response = bevey.ajax.cache[ajaxRequest.path + '?' + ajaxRequest.param + '?'];
+        if ((Bevey.ajax.cache[ajaxRequest.path + '?' + ajaxRequest.param + '?'] !== undefined) && (ajaxRequest.cache)) {
+          ajaxRequest.response = Bevey.ajax.cache[ajaxRequest.path + '?' + ajaxRequest.param + '?'];
 
           ajaxProcess();
 
@@ -1329,13 +1329,13 @@ var bevey = bevey || (function () {
 
         request.setRequestHeader('AJAX', 'true');
 
-        bevey.event.add(request, 'readystatechange', function () {
+        Bevey.event.add(request, 'readystatechange', function () {
           if (request.readyState === 4) {
             if (request.status === 200) {
               ajaxRequest.response = request.responseText;
 
               if (ajaxRequest.cache) {
-                bevey.ajax.cache[ajaxRequest.path + '?' + ajaxRequest.param] = ajaxRequest.response;
+                Bevey.ajax.cache[ajaxRequest.path + '?' + ajaxRequest.param] = ajaxRequest.response;
               }
 
               ajaxProcess();
@@ -1438,21 +1438,21 @@ var bevey = bevey || (function () {
           start = (typeof(document.body.ontouchstart) === 'undefined') ? 'mousedown' : 'touchstart',
           move  = (typeof(document.body.ontouchmove)  === 'undefined') ? 'mousemove' : 'touchmove',
           end   = (typeof(document.body.ontouchend)   === 'undefined') ? 'mouseup'   : 'touchend',
-          wrapperBorderOffsetX = bevey.findStyle(drag.elm.parentNode, 'border-left-width') + bevey.findStyle(drag.elm.parentNode, 'border-right-width'),
-          wrapperBorderOffsetY = bevey.findStyle(drag.elm.parentNode, 'border-top-width')  + bevey.findStyle(drag.elm.parentNode, 'border-bottom-width');
+          wrapperBorderOffsetX = Bevey.findStyle(drag.elm.parentNode, 'border-left-width') + Bevey.findStyle(drag.elm.parentNode, 'border-right-width'),
+          wrapperBorderOffsetY = Bevey.findStyle(drag.elm.parentNode, 'border-top-width')  + Bevey.findStyle(drag.elm.parentNode, 'border-bottom-width');
 
      /**
       * @private
       */
       mover = function (e) {
-        if (bevey.hasClass(drag.elm, 'active')) {
-          bevey.cancelBubble(e);
+        if (Bevey.hasClass(drag.elm, 'active')) {
+          Bevey.cancelBubble(e);
 
           if (e.preventDefault) {
             e.preventDefault();
           }
 
-          var position  = bevey.findMousePosition(e),
+          var position  = Bevey.findMousePosition(e),
               positionX = position.positionX,
               positionY = position.positionY,
               width     = drag.dragElm.offsetWidth,
@@ -1460,8 +1460,8 @@ var bevey = bevey || (function () {
               endX,
               endY;
 
-          drag.newX = positionX - drag.clickOffsetX + drag.startOffsetX - (drag.startWidth  - bevey.findScroll().positionX);
-          drag.newY = positionY - drag.clickOffsetY + drag.startOffsetY - (drag.startHeight - bevey.findScroll().positionY);
+          drag.newX = positionX - drag.clickOffsetX + drag.startOffsetX - (drag.startWidth  - Bevey.findScroll().positionX);
+          drag.newY = positionY - drag.clickOffsetY + drag.startOffsetY - (drag.startHeight - Bevey.findScroll().positionY);
 
           if (drag.restrict) {
             endX = drag.elm.parentNode.offsetWidth  - width  - wrapperBorderOffsetX;
@@ -1502,15 +1502,15 @@ var bevey = bevey || (function () {
       * @private
       */
       dropper = function (e) {
-        if (bevey.hasClass(drag.elm, 'active')) {
-          bevey.removeClass(drag.elm, 'active');
+        if (Bevey.hasClass(drag.elm, 'active')) {
+          Bevey.removeClass(drag.elm, 'active');
 
           if (drag.dropElm) {
             dropable(drag, true);
           }
 
-          bevey.event.remove(document, 'mousemove', mover);
-          bevey.event.remove(document, 'mouseup',   dropper);
+          Bevey.event.remove(document, 'mousemove', mover);
+          Bevey.event.remove(document, 'mouseup',   dropper);
 
           drag.onComplete();
         }
@@ -1544,7 +1544,7 @@ var bevey = bevey || (function () {
 
         for (i; i < drag.dropElm.length; i += 1) {
           dropBox = drag.dropElm[i];
-          offset  = bevey.totalOffset(dropBox, true);
+          offset  = Bevey.totalOffset(dropBox, true);
           dropX   = offset.offsetX;
           dropY   = offset.offsetY;
 
@@ -1557,7 +1557,7 @@ var bevey = bevey || (function () {
               ((drag.newY > parseInt(dropY - 30, 10)) && (drag.newY < parseInt(dropY + dropBox.offsetHeight - 10, 10)))) {
             canDrop = true;
             drag.activeDropBox = dropBox;
-            bevey.addClass(dropBox, 'active');
+            Bevey.addClass(dropBox, 'active');
 
             drag.newX = dropX;
             drag.newY = dropY;
@@ -1571,44 +1571,44 @@ var bevey = bevey || (function () {
             }
 
             if (drop) {
-              bevey.removeClass(dropBox, 'active');
+              Bevey.removeClass(dropBox, 'active');
 
               drag.onDrop[i](drag.elm);
             }
           }
 
           else {
-            bevey.removeClass(dropBox, 'active');
+            Bevey.removeClass(dropBox, 'active');
           }
         }
 
         if (canDrop === true) {
-          bevey.addClass(drag.elm, 'dropable');
+          Bevey.addClass(drag.elm, 'dropable');
         }
 
         else {
-          bevey.removeClass(drag.elm, 'dropable');
+          Bevey.removeClass(drag.elm, 'dropable');
         }
       };
 
-      bevey.event.add(drag.dragElm, start, function (e) {
-        var startOffset = bevey.findMousePosition(e);
+      Bevey.event.add(drag.dragElm, start, function (e) {
+        var startOffset = Bevey.findMousePosition(e);
 
-        bevey.clickDrag.zindex  = bevey.clickDrag.zindex || 99;
+        Bevey.clickDrag.zindex  = Bevey.clickDrag.zindex || 99;
 
-        bevey.cancelBubble(e);
+        Bevey.cancelBubble(e);
         drag.clickOffsetX       = startOffset.positionX;
         drag.clickOffsetY       = startOffset.positionY;
         drag.startOffsetX       = drag.elm.offsetLeft;
         drag.startOffsetY       = drag.elm.offsetTop;
-        drag.startWidth         = bevey.findScroll().positionX;
-        drag.startHeight        = bevey.findScroll().positionY;
-        drag.elm.style.zIndex   = bevey.clickDrag.zindex += 1;
+        drag.startWidth         = Bevey.findScroll().positionX;
+        drag.startHeight        = Bevey.findScroll().positionY;
+        drag.elm.style.zIndex   = Bevey.clickDrag.zindex += 1;
         drag.elm.style.margin   = 0;
         drag.elm.style.bottom   = 'auto';
         drag.elm.style.right    = 'auto';
         drag.elm.style.position = 'absolute';
-        bevey.addClass(drag.elm, 'active');
+        Bevey.addClass(drag.elm, 'active');
 
         drag.onStart();
 
@@ -1616,8 +1616,8 @@ var bevey = bevey || (function () {
           e.preventDefault();
         }
 
-        bevey.event.add(document, move, mover);
-        bevey.event.add(document, end,   dropper);
+        Bevey.event.add(document, move, mover);
+        Bevey.event.add(document, end,   dropper);
 
         mover(e);
       });
@@ -1637,10 +1637,10 @@ var bevey = bevey || (function () {
     resize : function (resize) {
       var restrictParent       = resize.restrict,
           dragElm              = document.createElement('div'),
-          parentBorderOffsetX  = bevey.findStyle(resize.elm, 'border-left-width') + bevey.findStyle(resize.elm, 'border-right-width'),
-          parentBorderOffsetY  = bevey.findStyle(resize.elm, 'border-top-width') + bevey.findStyle(resize.elm, 'border-bottom-width'),
-          wrapperBorderOffsetX = bevey.findStyle(resize.elm.parentNode, 'border-left-width') + bevey.findStyle(resize.elm.parentNode, 'border-right-width'),
-          wrapperBorderOffsetY = bevey.findStyle(resize.elm.parentNode, 'border-top-width') + bevey.findStyle(resize.elm.parentNode, 'border-bottom-width'),
+          parentBorderOffsetX  = Bevey.findStyle(resize.elm, 'border-left-width') + Bevey.findStyle(resize.elm, 'border-right-width'),
+          parentBorderOffsetY  = Bevey.findStyle(resize.elm, 'border-top-width') + Bevey.findStyle(resize.elm, 'border-bottom-width'),
+          wrapperBorderOffsetX = Bevey.findStyle(resize.elm.parentNode, 'border-left-width') + Bevey.findStyle(resize.elm.parentNode, 'border-right-width'),
+          wrapperBorderOffsetY = Bevey.findStyle(resize.elm.parentNode, 'border-top-width') + Bevey.findStyle(resize.elm.parentNode, 'border-bottom-width'),
           parentHeight         = resize.elm.offsetHeight,
           parentWidth          = resize.elm.offsetWidth;
 
@@ -1650,7 +1650,7 @@ var bevey = bevey || (function () {
 
       resize.elm.appendChild(dragElm);
 
-      bevey.addClass(dragElm, 'resize');
+      Bevey.addClass(dragElm, 'resize');
       dragElm.style.left = parentWidth  - dragElm.offsetWidth  - parentBorderOffsetX + 'px';
       dragElm.style.top  = parentHeight - dragElm.offsetHeight - parentBorderOffsetY + 'px';
       resize.elm         = dragElm;
@@ -1658,8 +1658,8 @@ var bevey = bevey || (function () {
       resize.onTween = function () {
         var containerWidth  = resize.elm.parentNode.parentNode.offsetWidth,
             containerHeight = resize.elm.parentNode.parentNode.offsetHeight,
-            width  = bevey.stripUnits(resize.elm.style.left) + dragElm.offsetWidth,
-            height = bevey.stripUnits(resize.elm.style.top)  + dragElm.offsetHeight,
+            width  = Bevey.stripUnits(resize.elm.style.left) + dragElm.offsetWidth,
+            height = Bevey.stripUnits(resize.elm.style.top)  + dragElm.offsetHeight,
            parentLeft = resize.elm.parentNode.offsetLeft,
            parentTop  = resize.elm.parentNode.offsetTop;
 
@@ -1692,7 +1692,7 @@ var bevey = bevey || (function () {
         }
       };
 
-      bevey.clickDrag(resize);
+      Bevey.clickDrag(resize);
     },
 
     rotator : {
@@ -1801,14 +1801,14 @@ var bevey = bevey || (function () {
             };
 
             setTimeout(function () {
-              bevey.animate(animation);
+              Bevey.animate(animation);
             }, 250);
 
             rotator.onComplete();
           }
         };
 
-        bevey.animate(animation);
+        Bevey.animate(animation);
       },
 
      /**
@@ -1844,11 +1844,11 @@ var bevey = bevey || (function () {
         }
 
         if (rotator.autoIndex === 0) {
-          bevey.event.add(rotator.elm, 'mouseenter', function () {
+          Bevey.event.add(rotator.elm, 'mouseenter', function () {
             rotator.pause = true;
           });
 
-          bevey.event.add(rotator.elm, 'mouseleave', function () {
+          Bevey.event.add(rotator.elm, 'mouseleave', function () {
             if (rotator.pause === true) {
               rotator.pause = false;
             }
@@ -1856,14 +1856,14 @@ var bevey = bevey || (function () {
         }
 
         if ((rotator.autoIndex) && (rotator.pause !== true)) {
-          bevey.rotator.rotate(rotator);
+          Bevey.rotator.rotate(rotator);
         }
 
         rotator.autoIndex += 1;
 
         setTimeout(function () {
           rotator.onStart();
-          bevey.rotator.auto(rotator);
+          Bevey.rotator.auto(rotator);
           rotator.onTween();
         }, rotator.interval);
       },
@@ -1896,19 +1896,19 @@ var bevey = bevey || (function () {
         * @private
         */
         navAction = function (e) {
-          var elm = bevey.getTarget(e);
+          var elm = Bevey.getTarget(e);
 
           if (elm.tagName.toLowerCase() === 'a') {
-            if (bevey.hasClass(elm, 'prev')) {
+            if (Bevey.hasClass(elm, 'prev')) {
               rotator.direction = 'prev';
             }
 
-            else if (bevey.hasClass(elm, 'next')) {
+            else if (Bevey.hasClass(elm, 'next')) {
               rotator.direction = 'next';
             }
 
             rotator.onStart();
-            bevey.rotator.rotate(rotator);
+            Bevey.rotator.rotate(rotator);
             linkCheck();
             rotator.onComplete();
           }
@@ -1931,12 +1931,12 @@ var bevey = bevey || (function () {
         */
         linkCheck = function () {
           if (rotator.index <= 0) {
-            bevey.addClass(prev, 'disabled');
+            Bevey.addClass(prev, 'disabled');
             prev.href = '#';
           }
 
           else {
-            bevey.removeClass(prev, 'disabled');
+            Bevey.removeClass(prev, 'disabled');
 
             if (typeof(rotator.photos[(rotator.index - 1)]) === 'object') {
               prev.href = rotator.photos[(rotator.index - 1)].src;
@@ -1948,12 +1948,12 @@ var bevey = bevey || (function () {
           }
 
           if ((rotator.index + 1) >= rotator.photos.length) {
-            bevey.addClass(next, 'disabled');
+            Bevey.addClass(next, 'disabled');
             next.href = '#';
           }
 
           else {
-            bevey.removeClass(next, 'disabled');
+            Bevey.removeClass(next, 'disabled');
 
             if (typeof(rotator.photos[(rotator.index + 1)]) === 'object') {
               next.href = rotator.photos[(rotator.index + 1)].src;
@@ -1966,30 +1966,30 @@ var bevey = bevey || (function () {
         };
 
         if (rotator.elm.parentNode.getElementsByTagName('a').length) {
-          prev = bevey.getElementsByClassName('prev', rotator.elm.parentNode, 'a')[0];
-          next = bevey.getElementsByClassName('next', rotator.elm.parentNode, 'a')[0];
+          prev = Bevey.getElementsByClassName('prev', rotator.elm.parentNode, 'a')[0];
+          next = Bevey.getElementsByClassName('next', rotator.elm.parentNode, 'a')[0];
 
-          for (i; i < bevey.event.list.length; i += 1) {
-            if ((bevey.event.list[i]) &&
-                (bevey.event.list[i][0] === rotator.elm.parentNode) &&
-                (bevey.event.list[i][1] === 'click')) {
-              bevey.event.remove(rotator.elm.parentNode, 'click', bevey.event.list[i][2]);
+          for (i; i < Bevey.event.list.length; i += 1) {
+            if ((Bevey.event.list[i]) &&
+                (Bevey.event.list[i][0] === rotator.elm.parentNode) &&
+                (Bevey.event.list[i][1] === 'click')) {
+              Bevey.event.remove(rotator.elm.parentNode, 'click', Bevey.event.list[i][2]);
             }
           }
 
-          bevey.event.add(rotator.elm.parentNode, 'click', navAction);
+          Bevey.event.add(rotator.elm.parentNode, 'click', navAction);
         }
 
         else {
           prev = document.createElement('a');
           next = document.createElement('a');
-          bevey.addClass(prev, 'prev');
-          bevey.putText(prev, 'Previous Image');
-          bevey.addClass(next, 'next');
-          bevey.putText(next, 'Next Image');
+          Bevey.addClass(prev, 'prev');
+          Bevey.putText(prev, 'Previous Image');
+          Bevey.addClass(next, 'next');
+          Bevey.putText(next, 'Next Image');
           rotator.elm.parentNode.appendChild(prev);
           rotator.elm.parentNode.appendChild(next);
-          bevey.event.add(rotator.elm.parentNode, 'click', navAction);
+          Bevey.event.add(rotator.elm.parentNode, 'click', navAction);
         }
 
         linkCheck();
@@ -2053,9 +2053,9 @@ var bevey = bevey || (function () {
         images[i]   = full;
       }
 
-      bevey.event.add(lightbox.elm, 'click', function (e) {
-        if (bevey.getTarget(e).nodeName.toLowerCase() === 'img') {
-          var elm       = bevey.getTarget(e),
+      Bevey.event.add(lightbox.elm, 'click', function (e) {
+        if (Bevey.getTarget(e).nodeName.toLowerCase() === 'img') {
+          var elm       = Bevey.getTarget(e),
               image     = elm,
               fullImage = image.parentNode.href,
               caption   = image.alt,
@@ -2070,11 +2070,11 @@ var bevey = bevey || (function () {
 
           lightbox.onStart();
 
-          if (bevey.hasClass(document.body.firstChild, 'overlay')) {
+          if (Bevey.hasClass(document.body.firstChild, 'overlay')) {
             overlay = document.body.firstChild;
-            content = bevey.getElementsByClassName('content', overlay, 'div')[0];
+            content = Bevey.getElementsByClassName('content', overlay, 'div')[0];
             overlay.style.display = 'block';
-            bevey.setOpacity(overlay, 1);
+            Bevey.setOpacity(overlay, 1);
 
             imageWrapper   = content.getElementsByTagName('div')[0];
             imageContainer = imageWrapper.getElementsByTagName('div')[0];
@@ -2084,12 +2084,12 @@ var bevey = bevey || (function () {
 
           else {
             overlay = document.createElement('div');
-            bevey.addClass(overlay, 'overlay');
+            Bevey.addClass(overlay, 'overlay');
             curtain = document.createElement('div');
-            bevey.addClass(curtain, 'curtain');
+            Bevey.addClass(curtain, 'curtain');
             overlay.appendChild(curtain);
             content = document.createElement('div');
-            bevey.addClass(content, 'content');
+            Bevey.addClass(content, 'content');
 
             imageContainer = document.createElement('div');
             imageWrapper   = document.createElement('div');
@@ -2102,11 +2102,11 @@ var bevey = bevey || (function () {
             content.appendChild(imageContainer);
             overlay.appendChild(content);
 
-            bevey.event.add(imageContainer, 'click', function (e) {
-              bevey.cancelBubble(e);
+            Bevey.event.add(imageContainer, 'click', function (e) {
+              Bevey.cancelBubble(e);
             });
 
-            bevey.event.add(overlay, 'click', function () {
+            Bevey.event.add(overlay, 'click', function () {
               var overlayAnimation = {
                 elm        : overlay,
                 property   : 'opacity',
@@ -2116,29 +2116,29 @@ var bevey = bevey || (function () {
                 onComplete : lightbox.onComplete
               };
 
-              bevey.animate(overlayAnimation);
+              Bevey.animate(overlayAnimation);
             });
 
-            bevey.insertFirst(overlay, document.body);
+            Bevey.insertFirst(overlay, document.body);
           }
 
           imageTag.src = fullImage;
           imageTag.alt = caption;
 
-          bevey.putText(captionTag, caption);
+          Bevey.putText(captionTag, caption);
 
           findSize(imageTag);
 
-          overlay.style.height = bevey.findDocumentHeight() + 'px';
+          overlay.style.height = Bevey.findDocumentHeight() + 'px';
 
-          if (bevey.findStyle(content, 'position') === 'relative') {
-            content.style.paddingTop = bevey.findScroll().positionY + 'px';
+          if (Bevey.findStyle(content, 'position') === 'relative') {
+            content.style.paddingTop = Bevey.findScroll().positionY + 'px';
           }
 
           else {
             if ((imageTag.offsetHeight + 85) > Math.min(document.body.clientHeight, document.documentElement.clientHeight)) {
               content.style.position   = 'absolute';
-              content.style.paddingTop = bevey.findScroll().positionY + 'px';
+              content.style.paddingTop = Bevey.findScroll().positionY + 'px';
             }
 
             else {
@@ -2157,13 +2157,13 @@ var bevey = bevey || (function () {
 
               findSize(rotator.elm);
 
-              overlay.style.height = bevey.findDocumentHeight() + 'px';
+              overlay.style.height = Bevey.findDocumentHeight() + 'px';
 
-              bevey.putText(rotator.elm.parentNode.nextSibling, rotator.elm.alt);
+              Bevey.putText(rotator.elm.parentNode.nextSibling, rotator.elm.alt);
             }
           };
 
-          bevey.rotator.control(rotator);
+          Bevey.rotator.control(rotator);
 
           if (e.preventDefault) {
             e.preventDefault();
@@ -2205,7 +2205,7 @@ var bevey = bevey || (function () {
             i = lazyImages.length - 1;
 
         if (lazyImages.length) {
-          scroll = bevey.findScroll().positionY + Math.min(document.body.clientHeight, document.documentElement.clientHeight);
+          scroll = Bevey.findScroll().positionY + Math.min(document.body.clientHeight, document.documentElement.clientHeight);
 
           for (i; i >= 0; i -= 1) {
             if (lazyImages[i].offsetTop < scroll) {
@@ -2225,17 +2225,17 @@ var bevey = bevey || (function () {
         if (allImages[i].offsetTop > Math.min(document.body.clientHeight, document.documentElement.clientHeight)) {
           if (!allImages[i].complete) {
             lazyImages.push(allImages[i]);
-            bevey.closure(allImages[i], setSrc(allImages[i]));
+            Bevey.closure(allImages[i], setSrc(allImages[i]));
           }
         }
       }
 
       if (lazyImages.length > 0) {
-        bevey.event.add(window, 'scroll', function () {
+        Bevey.event.add(window, 'scroll', function () {
           loadImages();
         });
 
-        bevey.event.add(window, 'resize', function () {
+        Bevey.event.add(window, 'resize', function () {
           loadImages();
         });
       }
@@ -2257,7 +2257,7 @@ var bevey = bevey || (function () {
           carousel,
           i = 0,
           j,
-          carousels = bevey.getElementsByClassName('carousel-wrap', elm, 'div'),
+          carousels = Bevey.getElementsByClassName('carousel-wrap', elm, 'div'),
           movePrev,
           moveNext;
 
@@ -2267,7 +2267,7 @@ var bevey = bevey || (function () {
       movePrev = function (carousel) {
         return function () {
           if (carousel.currPane > 0) {
-            bevey.removeClass(carousel.navNext, 'carousel-disabled');
+            Bevey.removeClass(carousel.navNext, 'carousel-disabled');
 
             var animation = {
               elm      : carousel.parent,
@@ -2279,16 +2279,16 @@ var bevey = bevey || (function () {
               onStart  : function () {
                 carousel.currPane = carousel.currPane - 1;
                 if (carousel.currPane <= 0) {
-                  bevey.addClass(carousel.navPrev, 'carousel-disabled');
+                  Bevey.addClass(carousel.navPrev, 'carousel-disabled');
                 }
 
                 else {
-                  bevey.removeClass(carousel.navPrev, 'carousel-disabled');
+                  Bevey.removeClass(carousel.navPrev, 'carousel-disabled');
                 }
               }
             };
 
-            bevey.animate(animation);
+            Bevey.animate(animation);
           }
         };
       };
@@ -2299,7 +2299,7 @@ var bevey = bevey || (function () {
       moveNext = function (carousel) {
         return function () {
           if (carousel.currPane < carousel.panes.length - 1) {
-            bevey.removeClass(carousel.navPrev, 'carousel-disabled');
+            Bevey.removeClass(carousel.navPrev, 'carousel-disabled');
 
             var animation = {
               elm      : carousel.parent,
@@ -2311,26 +2311,26 @@ var bevey = bevey || (function () {
               onStart  : function () {
                 carousel.currPane += 1;
                 if (carousel.currPane >= carousel.panes.length - 1) {
-                  bevey.addClass(carousel.navNext, 'carousel-disabled');
+                  Bevey.addClass(carousel.navNext, 'carousel-disabled');
                 }
 
                 else {
-                  bevey.removeClass(carousel.navNext, 'carousel-disabled');
+                  Bevey.removeClass(carousel.navNext, 'carousel-disabled');
                 }
               }
             };
 
-            bevey.animate(animation);
+            Bevey.animate(animation);
           }
         };
       };
 
       for (i; i < carousels.length; i += 1) {
-        carouselTemp = bevey.getElementsByClassName('carousel', carousels[i], 'ul');
+        carouselTemp = Bevey.getElementsByClassName('carousel', carousels[i], 'ul');
 
         carousel = {
           parent     : carouselTemp[0],
-          panes      : bevey.getElementsByClassName('pane', carouselTemp[0], 'li'),
+          panes      : Bevey.getElementsByClassName('pane', carouselTemp[0], 'li'),
           totalWidth : 0,
           currPane   : 0,
           paneStep   : 0,
@@ -2347,19 +2347,19 @@ var bevey = bevey || (function () {
 
         carousel.navPrev.href  = '#';
         carousel.navPrev.title = 'Previous pane in carousel';
-        bevey.cancelLink(carousel.navPrev);
-        bevey.addClass(carousel.navPrev, 'carousel-prev');
-        bevey.addClass(carousel.navPrev, 'carousel-disabled');
+        Bevey.cancelLink(carousel.navPrev);
+        Bevey.addClass(carousel.navPrev, 'carousel-prev');
+        Bevey.addClass(carousel.navPrev, 'carousel-disabled');
         carousels[i].appendChild(carousel.navPrev);
 
         carousel.navNext.href  = '#';
         carousel.navNext.title = 'Next pane in carousel';
-        bevey.cancelLink(carousel.navNext);
-        bevey.addClass(carousel.navNext, 'carousel-next');
+        Bevey.cancelLink(carousel.navNext);
+        Bevey.addClass(carousel.navNext, 'carousel-next');
         carousels[i].appendChild(carousel.navNext);
 
-        bevey.event.add(carousel.navPrev, 'click', bevey.closure(carousel, movePrev(carousel)));
-        bevey.event.add(carousel.navNext, 'click', bevey.closure(carousel, moveNext(carousel)));
+        Bevey.event.add(carousel.navPrev, 'click', Bevey.closure(carousel, movePrev(carousel)));
+        Bevey.event.add(carousel.navNext, 'click', Bevey.closure(carousel, moveNext(carousel)));
       }
     },
 
@@ -2412,16 +2412,16 @@ var bevey = bevey || (function () {
         autoComplete.external = true;
       }
 
-      bevey.addClass(anchor, 'closeResults');
-      bevey.addClass(container, 'noResults');
-      bevey.putText(item, autoComplete.preText);
+      Bevey.addClass(anchor, 'closeResults');
+      Bevey.addClass(container, 'noResults');
+      Bevey.putText(item, autoComplete.preText);
       container.appendChild(anchor);
       container.appendChild(list);
       list.appendChild(item);
       autoComplete.elm.parentNode.appendChild(container);
 
-      bevey.event.add(anchor, 'click', function () {
-        bevey.addClass(container, 'noResults');
+      Bevey.event.add(anchor, 'click', function () {
+        Bevey.addClass(container, 'noResults');
       });
 
      /**
@@ -2450,7 +2450,7 @@ var bevey = bevey || (function () {
         if (index && input) {
           autoComplete.onStart();
 
-          bevey.addClass(elm, 'active');
+          Bevey.addClass(elm, 'active');
 
           ajaxRequest = {
             path       : autoComplete.path,
@@ -2463,7 +2463,7 @@ var bevey = bevey || (function () {
                   template;
 
               if (ajaxRequest.response !== '[]') {
-                bevey.removeClass(container, 'noResults');
+                Bevey.removeClass(container, 'noResults');
 
                 if (typeof(JSON) === 'object') {
                   reply = JSON.parse(ajaxRequest.response);
@@ -2503,8 +2503,8 @@ var bevey = bevey || (function () {
                       link.target = '_blank';
                     }
 
-                    bevey.putText(link, reply[i].url);
-                    bevey.putText(caption, reply[i].title);
+                    Bevey.putText(link, reply[i].url);
+                    Bevey.putText(caption, reply[i].title);
 
                     item.appendChild(link);
                     item.appendChild(caption);
@@ -2514,28 +2514,28 @@ var bevey = bevey || (function () {
               }
 
               else {
-                bevey.removeChildren(list);
+                Bevey.removeChildren(list);
                 newItem = document.createElement('li');
-                bevey.putText(newItem, autoComplete.noResultText);
+                Bevey.putText(newItem, autoComplete.noResultText);
 
-                bevey.addClass(container, 'noResults');
+                Bevey.addClass(container, 'noResults');
                 list.appendChild(newItem);
               }
 
-              bevey.removeClass(elm, 'active');
+              Bevey.removeClass(elm, 'active');
 
               autoComplete.onComplete();
             }
           };
 
           autoComplete.time = time;
-          bevey.removeChildren(list);
+          Bevey.removeChildren(list);
 
-          bevey.ajax.request(ajaxRequest);
+          Bevey.ajax.request(ajaxRequest);
         }
       };
 
-      bevey.event.add(autoComplete.elm, 'keyup', bevey.closure(autoComplete.elm, function () {
+      Bevey.event.add(autoComplete.elm, 'keyup', Bevey.closure(autoComplete.elm, function () {
         newKey(autoComplete.elm);
       }));
     },
@@ -2584,21 +2584,21 @@ var bevey = bevey || (function () {
           }
         }
 
-        bevey.event.add(elm, 'focus', function () {
+        Bevey.event.add(elm, 'focus', function () {
           if (elm.value === text) {
             elm.value = '';
           }
         });
 
-        bevey.event.add(elm, 'blur', function () {
-          elm.value = bevey.trim(elm.value);
+        Bevey.event.add(elm, 'blur', function () {
+          elm.value = Bevey.trim(elm.value);
 
           if (elm.value === '') {
             elm.value = text;
           }
         });
 
-        elm.value = bevey.trim(text);
+        elm.value = Bevey.trim(text);
       }
     },
 
@@ -2670,7 +2670,7 @@ var bevey = bevey || (function () {
 
       for (i; i < inputs.length; i += 1) {
         if (inputs[i].maxLength > 0) {
-          bevey.event.add(inputs[i], 'keyup', bevey.closure(inputs[i], checkFocus(inputs[i])));
+          Bevey.event.add(inputs[i], 'keyup', Bevey.closure(inputs[i], checkFocus(inputs[i])));
         }
       }
     },
@@ -2698,7 +2698,7 @@ var bevey = bevey || (function () {
         tabs.animate = true;
       }
 
-      var tabSets = bevey.getElementsByClassName('tabs', tabs.elm, 'ul'),
+      var tabSets = Bevey.getElementsByClassName('tabs', tabs.elm, 'ul'),
           i       = 0,
           changeTab;
 
@@ -2707,7 +2707,7 @@ var bevey = bevey || (function () {
       */
       changeTab = function () {
         return function (e) {
-          var elm = bevey.getTarget(e),
+          var elm = Bevey.getTarget(e),
               tabSet,
               paneSet,
               index,
@@ -2719,7 +2719,7 @@ var bevey = bevey || (function () {
           }
 
           tabSet  = elm.parentNode.getElementsByTagName('li');
-          paneSet = bevey.getElementsByClassName('panes', elm.parentNode.parentNode, 'ul');
+          paneSet = Bevey.getElementsByClassName('panes', elm.parentNode.parentNode, 'ul');
           paneSet = paneSet[0].getElementsByTagName('li');
 
           tabs.onStart();
@@ -2730,14 +2730,14 @@ var bevey = bevey || (function () {
             }
 
             else {
-              bevey.removeClass(tabSet[j],  'selected');
-              bevey.removeClass(paneSet[j], 'selected');
+              Bevey.removeClass(tabSet[j],  'selected');
+              Bevey.removeClass(paneSet[j], 'selected');
             }
           }
 
           if (tabs.animate) {
-            if (!bevey.hasClass(paneSet[index], 'selected')) {
-              bevey.setOpacity(paneSet[index], 0);
+            if (!Bevey.hasClass(paneSet[index], 'selected')) {
+              Bevey.setOpacity(paneSet[index], 0);
 
               animation = {
                 elm        : paneSet[index],
@@ -2752,12 +2752,12 @@ var bevey = bevey || (function () {
                 }
               };
 
-              bevey.animate(animation);
+              Bevey.animate(animation);
             }
           }
 
-          bevey.addClass(tabSet[index],  'selected');
-          bevey.addClass(paneSet[index], 'selected');
+          Bevey.addClass(tabSet[index],  'selected');
+          Bevey.addClass(paneSet[index], 'selected');
 
           if (e.preventDefault) {
             e.preventDefault();
@@ -2768,7 +2768,7 @@ var bevey = bevey || (function () {
       };
 
       for (i; i < tabSets.length; i += 1) {
-        bevey.event.add(tabSets[i], 'click', changeTab());
+        Bevey.event.add(tabSets[i], 'click', changeTab());
       }
     },
 
@@ -2782,10 +2782,10 @@ var bevey = bevey || (function () {
     *         will be applied.
     */
     zoomer : function (direction) {
-      var currentSize = bevey.findStyle(document.body, 'font-size') || 12;
+      var currentSize = Bevey.findStyle(document.body, 'font-size') || 12;
 
       if (direction === undefined) {
-        currentSize = bevey.readCookie('zoomer') || currentSize;
+        currentSize = Bevey.readCookie('zoomer') || currentSize;
       }
 
       if (direction === 'down') {
@@ -2807,11 +2807,11 @@ var bevey = bevey || (function () {
     *  global function of "init" is available, it will also be executed.
     */
     init : function () {
-      bevey.lazyLoad();
-      bevey.addClass(document.body, 'rich');
-      bevey.externalLinks();
-      bevey.tabs();
-      bevey.carousel();
+      Bevey.lazyLoad();
+      Bevey.addClass(document.body, 'rich');
+      Bevey.externalLinks();
+      Bevey.tabs();
+      Bevey.carousel();
 
       if (typeof(init) === 'function') {
         init();
@@ -2821,17 +2821,17 @@ var bevey = bevey || (function () {
 } ());
 
 if (document.addEventListener) {
-  document.addEventListener('DOMContentLoaded', bevey.init, false);
+  document.addEventListener('DOMContentLoaded', Bevey.init, false);
 }
 
-bevey.event.add(window, 'load', function () {
+Bevey.event.add(window, 'load', function () {
   'use strict';
   if (!document.addEventListener) {
-    bevey.init();
+    Bevey.init();
   }
 });
 
-bevey.event.add(window, 'unload', function () {
+Bevey.event.add(window, 'unload', function () {
   'use strict';
-  bevey.event.removeAll();
+  Bevey.event.removeAll();
 });
